@@ -129,7 +129,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 import { getSceneById } from '@/data/scenes'
-import { apiService } from '@/services/api'
+import { apiService, type Message } from '@/services/api'
 import type { Scene } from '@/types/scene'
 import { renderTemplate, getTemplateContent } from '@/services/template'
 
@@ -196,7 +196,7 @@ const sendMessage = async () => {
 
   try {
     // 构建消息历史
-    const messages = [
+    const messages: Message[] = [
       {
         role: "system",
         content: "你是一个专业的助手，请始终以JSON格式回复，包含所有必要的信息。确保回复的JSON是有效的，并包含所有必需的字段。"

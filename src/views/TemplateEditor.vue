@@ -111,8 +111,25 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { apiService, type Message } from '@/services/api'
 import type { Scene } from '@/types/scene'
-import { apiService } from '@/services/api'
+
+interface Example {
+  user: string;
+  assistant: string | object | Array<string | object>;
+}
+
+interface APIResponse {
+  title?: string;
+  description?: string;
+  introduction?: string;
+  systemPrompt?: string;
+  examples?: Example[];
+  template?: {
+    html: string;
+    css: string;
+  };
+}
 
 const router = useRouter()
 const route = useRoute()
@@ -181,20 +198,20 @@ const generateTemplate = async () => {
 
   generating.value = true
   try {
-    const messages = [
+    const messages: Message[] = [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: aiInput.value }
     ]
 
-    const response = await apiService.chat(messages)
+    const response = await apiService.chat(messages) as APIResponse
     if (response) {
       // 处理示例数组
-      const examples = response.examples?.map(example => {
+      const examples = response.examples?.map((example: Example) => {
         // 如果 assistant 是数组，处理每个元素
         if (Array.isArray(example.assistant)) {
           return {
             user: example.user,
-            assistant: example.assistant.map(item => 
+            assistant: example.assistant.map((item: string | object) => 
               typeof item === 'string' ? item : JSON.stringify(item)
             ).join('\n')
           }
