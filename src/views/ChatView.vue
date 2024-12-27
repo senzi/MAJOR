@@ -86,7 +86,19 @@
 
           <!-- 预览展示 -->
           <div v-if="activeTab === 'preview'" class="preview-view">
-            <div v-html="renderedContent"></div>
+            <div class="preview-wrapper" ref="previewRef">
+              <div id="preview-content" v-html="renderedContent"></div>
+            </div>
+            <div class="preview-actions">
+              <button 
+                class="download-button" 
+                @click="downloadPreview" 
+                :disabled="downloading"
+              >
+                <span v-if="downloading">下载中...</span>
+                <span v-else>下载图片</span>
+              </button>
+            </div>
           </div>
 
           <!-- 模板展示 -->
@@ -132,6 +144,7 @@ import { getSceneById } from '@/data/scenes'
 import { apiService, type Message } from '@/services/api'
 import type { Scene } from '@/types/scene'
 import { renderTemplate, getTemplateContent } from '@/services/template'
+import html2canvas from 'html2canvas'
 
 const route = useRoute()
 const router = useRouter()
@@ -144,6 +157,8 @@ const chatHistoryRef = ref<HTMLElement | null>(null)
 const loading = ref(false)
 const activeTab = ref<'json' | 'prompt' | 'preview' | 'template'>('preview')
 const currentJson = ref('{}')
+const previewRef = ref<HTMLElement | null>(null)
+const downloading = ref(false)
 
 onMounted(() => {
   const sceneId = route.params.sceneId as string
@@ -243,6 +258,41 @@ const scrollToBottom = () => {
       chatHistoryRef.value.scrollTop = chatHistoryRef.value.scrollHeight
     }
   }, 100)
+}
+
+const downloadPreview = async () => {
+  if (!previewRef.value || downloading.value) return
+  
+  downloading.value = true
+  try {
+    const element = previewRef.value
+    const canvas = await html2canvas(element, {
+      scale: 2, // 提高清晰度
+      useCORS: true, // 允许跨域图片
+      logging: false,
+      backgroundColor: '#ffffff',
+      onclone: (clonedDoc) => {
+        // 确保克隆的元素样式已完全加载
+        const clonedElement = clonedDoc.querySelector('.preview-wrapper')
+        if (clonedElement) {
+          clonedElement.style.visibility = 'visible'
+        }
+      }
+    })
+
+    // 创建下载链接
+    const link = document.createElement('a')
+    link.download = `preview-${Date.now()}.png`
+    link.href = canvas.toDataURL('image/png')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  } catch (error) {
+    console.error('下载预览图失败:', error)
+    alert('下载预览图失败，请重试')
+  } finally {
+    downloading.value = false
+  }
 }
 
 watch(chatHistory, scrollToBottom)
@@ -565,6 +615,60 @@ watch(chatHistory, scrollToBottom)
   padding: var(--spacing-4);
   flex: 1;
   border: 1px solid var(--border);
+}
+
+.preview-wrapper {
+  background-color: var(--background);
+  min-height: 100px;
+  padding: 20px;
+}
+
+#preview-content {
+  width: 100%;
+}
+
+.preview-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.download-button {
+  background: linear-gradient(135deg, #1a73e8, #0d47a1);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.download-button:hover {
+  background: linear-gradient(135deg, #1557b0, #0a3578);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.download-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.download-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .template-view {
