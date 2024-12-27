@@ -4,6 +4,8 @@ MAJOR 是一个可视化工具包，专注于将 Moonshot API 的 JSON 模式响
 
 在线 Demo：[major.closeai.moe](https://major.closeai.moe)
 
+![Demo Preview](.github/demo.png)
+
 ## 设计理念
 
 MAJOR 的核心理念是展示 AI 接口的 JSON 模式输出的优势：
