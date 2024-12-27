@@ -12,6 +12,11 @@
         />
       </div>
     </main>
+    <PreviewModal
+      v-model:visible="previewVisible"
+      :scene="selectedScene"
+      v-if="selectedScene"
+    />
   </div>
 </template>
 
@@ -22,18 +27,22 @@
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import SceneCard from '@/components/SceneCard.vue'
+import PreviewModal from '@/components/PreviewModal.vue'
 import { scenes } from '@/data/scenes'
 import type { Scene } from '@/types/scene'
+import { ref } from 'vue'
 
 const router = useRouter()
+const previewVisible = ref(false)
+const selectedScene = ref<Scene | null>(null)
 
 const goToChat = (scene: Scene) => {
   router.push(`/chat/${scene.id}`)
 }
 
 const previewScene = (scene: Scene) => {
-  // 实现预览逻辑
-  console.log('Preview scene:', scene)
+  selectedScene.value = scene
+  previewVisible.value = true
 }
 </script>
 
