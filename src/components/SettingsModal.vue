@@ -15,17 +15,19 @@
             >
           </div>
           <div class="info-section">
-            <h3>Why Moonshot?</h3>
+            <h3>为什么选择 Moonshot?</h3>
             <ul>
-              <li>支持中文对话</li>
-              <li>响应速度快</li>
-              <li>性价比高</li>
+              <li>原生支持JSON输出模式，提供结构化且可靠的数据响应</li>
+              <li>强大的中文理解和生成能力</li>
+              <li>低延迟、高性能的API服务</li>
+              <li>合理的价格和灵活的计费方式</li>
             </ul>
-            <h3>How to get API Key:</h3>
+            <h3>如何获取 API Key</h3>
             <ol>
-              <li>访问 moonshot.com</li>
-              <li>注册账号</li>
-              <li>在控制台获取API Key</li>
+              <li>访问 <a href="https://platform.moonshot.cn/" target="_blank">Moonshot开发者平台</a></li>
+              <li>注册/登录开发者账号</li>
+              <li>在控制台创建获取API Key</li>
+              <li>将获取到的API Key填入上方输入框</li>
             </ol>
           </div>
         </div>
@@ -155,15 +157,13 @@
   }
 
   .info-section {
-    background-color: var(--background);
-    border-radius: var(--radius);
     padding: var(--spacing-4);
   }
 
   .info-section h3 {
-    font-size: var(--font-size-lg);
-    color: var(--text-primary);
     margin: var(--spacing-4) 0 var(--spacing-2);
+    font-size: 1rem;
+    color: var(--color-text);
   }
 
   .info-section h3:first-child {
@@ -172,12 +172,23 @@
 
   .info-section ul,
   .info-section ol {
-    padding-left: var(--spacing-4);
-    color: var(--text-secondary);
+    margin: 0;
+    padding-left: var(--spacing-6);
   }
 
   .info-section li {
     margin: var(--spacing-2) 0;
+    color: var(--color-text-light);
+    line-height: 1.5;
+  }
+
+  .info-section a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .info-section a:hover {
+    text-decoration: underline;
   }
 
   .modal-footer {

@@ -5,6 +5,9 @@
     <div class="card-preview">
       <button @click.stop="$emit('preview')">预览示例</button>
     </div>
+    <div class="scene-actions">
+      <slot name="actions"></slot>
+    </div>
     <div class="card-tags">
       <span v-for="tag in scene.tags" :key="tag" class="tag">
         #{{ tag }}
@@ -71,6 +74,12 @@ defineEmits<{
   background: var(--primary-light);
   border-color: var(--primary);
   color: white;
+}
+
+.scene-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
 }
 
 .card-tags {

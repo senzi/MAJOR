@@ -1,48 +1,64 @@
 <template>
-  <div class="home-container">
-    <div class="home-header">
+  <div class="home">
+    <div class="header">
       <AppHeader />
     </div>
-    <div class="home-content">
+    <div class="content">
       <div class="project-intro">
         <h2>MAJOR</h2>
-        <p>一个基于大语言模型的AI助手</p>
-        <div class="intro-icons">
-          <div class="intro-icon">
-            <span>🤖</span>
-            <p>智能对话</p>
+        <p class="subtitle">
+          <span class="highlight">M</span>oonshot
+          <span class="highlight">A</span>ssisted
+          <span class="highlight">J</span>SON
+          <span class="highlight">O</span>utput
+          <span class="highlight">R</span>enderer
+        </p>
+        <p class="description">将 Moonshot 的 JSON 响应转换为交互式可视化视图的工具集</p>
+        <div class="api-guide">
+          <p>🔑 在开始之前，请先前往 <a href="https://platform.moonshot.cn/" target="_blank">Moonshot Platform</a> 获取 API Key</p>
+        </div>
+        <div class="intro-features">
+          <div class="feature">
+            <span class="feature-icon">🔄</span>
+            <p>智能转换</p>
           </div>
-          <div class="intro-icon">
-            <span>🎨</span>
-            <p>模板生成</p>
+          <div class="feature">
+            <span class="feature-icon">🎨</span>
+            <p>可视化渲染</p>
           </div>
-          <div class="intro-icon">
-            <span>⚡️</span>
-            <p>快速响应</p>
+          <div class="feature">
+            <span class="feature-icon">⚡️</span>
+            <p>灵活定制</p>
           </div>
         </div>
       </div>
       <div class="scenes-grid">
-        <SceneCard
-          v-for="scene in scenes"
-          :key="scene.id"
-          :scene="scene"
+        <SceneCard 
+          v-for="scene in allScenes" 
+          :key="scene.id" 
+          :scene="scene" 
           @click="goToChat(scene)"
           @preview="previewScene(scene)"
-        />
+        >
+          <template #actions v-if="scene.id.startsWith('custom_')">
+            <button class="edit-button" @click.stop="editTemplate(scene)">
+              编辑
+            </button>
+          </template>
+        </SceneCard>
+        <div class="add-template-card" @click="router.push('/template/new')">
+          <div class="add-icon">+</div>
+          <p>新建模板</p>
+        </div>
       </div>
     </div>
     <AppFooter />
-    <PreviewModal
-      v-model:visible="previewVisible"
-      :scene="selectedScene"
-      v-if="selectedScene"
-    />
+    <PreviewModal v-model:visible="previewVisible" :scene="selectedScene" v-if="selectedScene" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
@@ -55,77 +71,151 @@ const router = useRouter()
 const previewVisible = ref(false)
 const selectedScene = ref<Scene | null>(null)
 
+const allScenes = computed(() => {
+  const customTemplates = JSON.parse(localStorage.getItem('customTemplates') || '[]')
+  return [...scenes, ...customTemplates]
+})
+
 const goToChat = (scene: Scene) => {
-  router.push(`/chat/${scene.id}`)
+  // 如果是自定义模板，使用 custom_ 前缀
+  const sceneId = scene.id.startsWith('custom_') ? scene.id : scene.id
+  router.push(`/chat/${sceneId}`)
 }
 
 const previewScene = (scene: Scene) => {
   selectedScene.value = scene
   previewVisible.value = true
 }
+
+const editTemplate = (scene: Scene) => {
+  router.push(`/template/${scene.id}`)
+}
 </script>
 
 <style scoped>
-.home-container {
-  height: 100%;
+.home {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--background);
-  overflow: hidden;
 }
 
-.home-header {
-  flex-shrink: 0;
+.header {
+  padding: var(--spacing-4);
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.home-content {
+.content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+  overflow-y: auto;
   padding: var(--spacing-4);
 }
 
 .project-intro {
   text-align: center;
-  margin-bottom: var(--spacing-8);
-  flex-shrink: 0;
+  padding: var(--spacing-2) 0;
+  margin-bottom: var(--spacing-4);
 }
 
 .project-intro h2 {
   font-size: var(--font-size-2xl);
+  font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 var(--spacing-2) 0;
-}
-
-.project-intro p {
-  color: var(--text-secondary);
   margin: 0;
+  line-height: 1.2;
 }
 
-.intro-icons {
+.project-intro .subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  margin: var(--spacing-1) 0 0 0;
+}
+
+.project-intro .description {
+  max-width: 600px;
+  margin: 1.5rem auto;
+  color: var(--color-text);
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+.api-guide {
+  background: linear-gradient(to right, var(--color-background-soft), var(--background));
+  border-radius: 12px;
+  padding: 1rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  border: 1px solid var(--border);
+}
+
+.api-guide p {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.api-guide a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.api-guide a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.intro-features {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-8);
-  margin-top: var(--spacing-6);
+  gap: 3rem;
+  margin-top: 2.5rem;
 }
 
-.intro-icon {
-  text-align: center;
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.intro-icon span {
+.feature-icon {
   font-size: 2rem;
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+
+.feature:hover .feature-icon {
+  transform: scale(1.1);
+}
+
+.feature p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .scenes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--spacing-4);
-  overflow-y: auto;
-  padding: var(--spacing-2);
-  align-items: start;
-  flex: 1;
+  height: fit-content;
 }
 
 .scene-card {
@@ -197,6 +287,61 @@ const previewScene = (scene: Scene) => {
 
 .preview-button:hover {
   background-color: var(--primary-dark);
+}
+
+.add-template-card {
+  background: linear-gradient(135deg, var(--surface), var(--background));
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: var(--spacing-4);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  transition: all 0.2s ease;
+  min-height: 200px;
+}
+
+.add-template-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.add-icon {
+  font-size: 2rem;
+  color: var(--color-text-light);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-2);
+}
+
+.add-template-card p {
+  margin: 0;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+}
+
+.edit-button {
+  padding: var(--spacing-1) var(--spacing-3);
+  background-color: var(--color-background-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.edit-button:hover {
+  background-color: var(--color-background);
+  border-color: var(--color-primary);
 }
 
 /* 为 AppHeader 组件添加样式 */

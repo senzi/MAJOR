@@ -13,8 +13,13 @@ const router = createRouter({
     {
       path: '/chat/:sceneId',
       name: 'chat',
-      component: ChatView,
+      component: () => import('../views/ChatView.vue'),
       props: true
+    },
+    {
+      path: '/template/:id',
+      name: 'template-editor',
+      component: () => import('../views/TemplateEditor.vue')
     }
   ]
 })

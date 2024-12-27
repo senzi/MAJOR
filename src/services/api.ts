@@ -37,7 +37,7 @@ class APIService {
 
     try {
       const completion = await this.client.chat.completions.create({
-        model: "moonshot-v1-8k",
+        model: "moonshot-v1-auto",
         messages: messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
         response_format: { type: "json_object" },
         temperature: 0.7

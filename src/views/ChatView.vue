@@ -14,13 +14,19 @@
         <!-- 场景介绍区域 -->
         <div class="scene-introduction">
           <div class="introduction-content">
-            <pre>{{ currentScene?.introduction }}</pre>
+            <pre class="introduction-text">{{ currentScene?.introduction }}</pre>
           </div>
           <div class="example-section">
             <h4>示例：</h4>
             <div v-for="(example, index) in currentScene?.examples" :key="index" class="example-item">
-              <div class="example-user">👤 {{ example.user }}</div>
-              <div class="example-assistant">🤖 {{ example.assistant }}</div>
+              <div class="example-user">
+                <span class="icon">👤</span>
+                <span class="content">{{ example.user }}</span>
+              </div>
+              <div class="example-assistant">
+                <span class="icon">🤖</span>
+                <pre class="json-content">{{ formatJson(example.assistant) }}</pre>
+              </div>
             </div>
           </div>
           <div class="divider"></div>
@@ -28,7 +34,10 @@
         <!-- 聊天历史 -->
         <div class="chat-history" ref="chatHistoryRef">
           <div v-for="(msg, index) in chatHistory" :key="index" :class="['message', msg.role]">
-            <div class="message-content">{{ msg.content }}</div>
+            <div class="message-content">
+              <pre v-if="msg.role === 'assistant'" class="json-content">{{ formatJson(msg.content) }}</pre>
+              <span v-else>{{ msg.content }}</span>
+            </div>
           </div>
         </div>
 
@@ -61,13 +70,18 @@
 
         <div class="tab-content">
           <!-- JSON 展示 -->
-          <div v-if="activeTab === 'json'" class="json-view">
-            <pre>{{ currentJson }}</pre>
+          <div v-show="activeTab === 'json'" class="json-section">
+            <pre v-if="currentJson !== '{}'" class="json-content">{{ currentJson }}</pre>
+            <div v-else class="empty-json">
+              <div class="empty-icon">{ }</div>
+              <p>在左边进行对话后</p>
+              <p>这里能查看API输出的原始JSON</p>
+            </div>
           </div>
 
           <!-- Prompt 展示 -->
           <div v-if="activeTab === 'prompt'" class="prompt-view">
-            <pre>{{ currentScene?.systemPrompt }}</pre>
+            <pre class="prompt-text">{{ currentScene?.systemPrompt }}</pre>
           </div>
 
           <!-- 预览展示 -->
@@ -77,13 +91,31 @@
 
           <!-- 模板展示 -->
           <div v-if="activeTab === 'template'" class="template-view">
-            <div class="template-section">
-              <h4>HTML 模板</h4>
-              <pre>{{ templateContent.html }}</pre>
+            <div class="template-header">
+              <h3>Handlebars 模板</h3>
+              <div class="template-info">
+                <p>我们使用 Handlebars 作为模板引擎，常用语法：</p>
+                <ul>
+                  <li><code>&#123;&#123;variable&#125;&#125;</code> - 显示变量</li>
+                  <li><code>&#123;&#123;#each items&#125;&#125; ... &#123;&#123;/each&#125;&#125;</code> - 循环数组</li>
+                  <li>
+                    <code>&#123;&#123;#if condition&#125;&#125; ... &#123;&#123;else&#125;&#125; ... &#123;&#123;/if&#125;&#125;</code>
+                    - 条件判断
+                  </li>
+                  <li><code>&#123;&#123;#with object&#125;&#125; ... &#123;&#123;/with&#125;&#125;</code> - 改变上下文</li>
+                </ul>
+                <p>更多语法请参考 <a href="https://handlebarsjs.com/guide/" target="_blank">Handlebars 官方文档</a></p>
+              </div>
             </div>
-            <div class="template-section">
-              <h4>CSS 样式</h4>
-              <pre>{{ templateContent.css }}</pre>
+            <div class="template-content">
+              <div class="template-section">
+                <h4>HTML Template</h4>
+                <pre>{{ templateContent.html }}</pre>
+              </div>
+              <div class="template-section">
+                <h4>CSS Styles</h4>
+                <pre>{{ templateContent.css }}</pre>
+              </div>
             </div>
           </div>
         </div>
@@ -106,7 +138,7 @@ const router = useRouter()
 const settingsStore = useSettingsStore()
 
 const currentScene = ref<Scene | null>(null)
-const chatHistory = ref<Array<{role: string, content: string}>>([])
+const chatHistory = ref<Array<{ role: string, content: string }>>([])
 const newMessage = ref('')
 const chatHistoryRef = ref<HTMLElement | null>(null)
 const loading = ref(false)
@@ -140,6 +172,14 @@ const renderedContent = computed(() => {
     return '渲染错误'
   }
 })
+
+const formatJson = (jsonString: string) => {
+  try {
+    return JSON.stringify(JSON.parse(jsonString), null, 2)
+  } catch {
+    return jsonString
+  }
+}
 
 const sendMessage = async () => {
   if (!newMessage.value.trim() || loading.value) return
@@ -210,10 +250,11 @@ watch(chatHistory, scrollToBottom)
 
 <style scoped>
 .chat-container {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--background);
+  overflow-y: auto;
 }
 
 .chat-header {
@@ -257,54 +298,74 @@ watch(chatHistory, scrollToBottom)
   width: 40%;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  padding: var(--spacing-4);
   min-width: 0;
   border-right: 1px solid var(--border);
 }
 
 .scene-introduction {
-  padding: var(--spacing-4);
-  background-color: var(--surface);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
+  background-color: var(--background);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-4);
+  max-height: 40vh;
+  overflow-y: auto;
 }
 
 .introduction-content {
-  color: var(--text-secondary);
-  white-space: pre-wrap;
-  margin-bottom: var(--spacing-4);
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.introduction-text {
+  margin: 0;
+  padding: var(--spacing-4);
+  white-space: pre-line;
+  word-break: break-word;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.example-section {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--border);
 }
 
 .example-section h4 {
+  margin: 0 0 var(--spacing-4) 0;
   color: var(--text-primary);
-  margin: 0 0 var(--spacing-2) 0;
-  font-size: var(--font-size-md);
 }
 
 .example-item {
-  background-color: var(--background);
+  margin-bottom: var(--spacing-4);
+  padding: var(--spacing-2);
+  background-color: var(--surface);
   border-radius: var(--radius);
-  padding: var(--spacing-3);
-  margin-bottom: var(--spacing-2);
+  box-shadow: var(--shadow-sm);
 }
 
 .example-item:last-child {
   margin-bottom: 0;
 }
 
-.example-user {
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-2);
-}
-
+.example-user,
 .example-assistant {
-  color: var(--text-secondary);
-  font-family: monospace;
+  display: flex;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2);
 }
 
-.divider {
-  height: 1px;
-  background-color: var(--border);
-  margin: var(--spacing-4) 0;
+.example-user .icon,
+.example-assistant .icon {
+  flex-shrink: 0;
+}
+
+.example-user .content,
+.example-assistant pre.json-content {
+  flex: 1;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .chat-history {
@@ -426,20 +487,74 @@ watch(chatHistory, scrollToBottom)
   flex-direction: column;
 }
 
-.json-view pre,
+.json-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.json-content {
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+  padding: var(--spacing-2);
+  background-color: var(--color-background-soft);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.empty-json {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-light);
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-4);
+  opacity: 0.5;
+}
+
+.empty-json p {
+  margin: var(--spacing-1) 0;
+  font-size: 0.9rem;
+}
+
+.message-content pre {
+  max-height: 400px;
+  overflow: auto;
+}
+
 .prompt-view pre {
   margin: 0;
   padding: var(--spacing-4);
   background-color: var(--surface);
   border-radius: var(--radius);
   overflow-x: auto;
-  white-space: pre-wrap;
+  white-space: pre-line;
   word-break: break-word;
   color: var(--text-primary);
   font-family: monospace;
   line-height: 1.5;
   flex: 1;
   border: 1px solid var(--border);
+}
+
+.prompt-text {
+  margin: 0;
+  padding: var(--spacing-4);
+  white-space: pre-line;
+  word-break: break-word;
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-background-soft);
+  border-radius: var(--radius);
 }
 
 .preview-view {
@@ -457,6 +572,48 @@ watch(chatHistory, scrollToBottom)
   flex-direction: column;
   gap: var(--spacing-4);
   flex: 1;
+}
+
+.template-header {
+  margin-bottom: var(--spacing-4);
+}
+
+.template-info {
+  background-color: var(--color-background-soft);
+  border-radius: var(--radius);
+  padding: var(--spacing-4);
+  margin-top: var(--spacing-2);
+}
+
+.template-info p {
+  margin: var(--spacing-2) 0;
+  color: var(--color-text);
+}
+
+.template-info ul {
+  margin: var(--spacing-2) 0;
+  padding-left: var(--spacing-6);
+}
+
+.template-info li {
+  margin: var(--spacing-2) 0;
+  color: var(--color-text-light);
+}
+
+.template-info code {
+  background-color: var(--color-background);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+}
+
+.template-info a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.template-info a:hover {
+  text-decoration: underline;
 }
 
 .template-section {

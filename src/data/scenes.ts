@@ -290,9 +290,36 @@ export const scenes: Scene[] = [
 }`
         },
         tags: ['菜谱', '烹饪']
-    }
+    },
+    {
+        "id": "3",
+        "title": "极简读书笔记生成器",
+        "description": "生成包含关键词、内容梗概和有趣观点的极简读书笔记",
+        "introduction": "欢迎使用极简读书笔记生成器！\n这是一个帮助你快速记录和回顾书籍关键内容的工具。通过输入书籍的重要信息，生成一份简洁、有逻辑的读书笔记。",
+        "systemPrompt": "你是一个专业的读书笔记生成器。请根据用户输入的书籍信息，生成一份包含关键词、内容梗概和有趣观点的极简读书笔记。\n\n你必须始终以JSON格式回复，包含以下字段：\n- keywords: 关键词（数组）\n- summary: 内容梗概（字符串）\n- interesting_points: 有趣观点（数组）\n\n示例格式：\n{\n  \"keywords\": [\"成长\", \"决策\", \"自我提升\"],\n  \"summary\": \"本书探讨了个人成长过程中的决策制定，如何通过自我提升实现更好的自我。\",\n  \"interesting_points\": [\"决策的质量直接影响个人成长\", \"自我认知是自我提升的基石\"]\n}",
+        "tags": [
+          "读书笔记",
+          "极简"
+        ],
+        "examples": [
+          {
+            "user": "生成一份关于这本书的笔记：<书的内容略>",
+            "assistant": "{\n  \"keywords\": [\"成长\", \"决策\", \"自我提升\"],\n  \"summary\": \"本书探讨了个人成长过程中的决策制定，如何通过自我提升实现更好的自我。\",\n  \"interesting_points\": [\"决策的质量直接影响个人成长\", \"自我认知是自我提升的基石\"]\n}"
+          }
+        ],
+        "template": {
+          "html": "<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>读书笔记</title>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"keywords-section\">\n            <div class=\"section-title\">\n                <span class=\"icon\">🏷️</span>\n                <h2>关键词</h2>\n            </div>\n            <div class=\"keywords-container\">\n                {{#each keywords}}\n                    <span class=\"keyword\">{{this}}</span>\n                {{/each}}\n            </div>\n        </div>\n\n        <div class=\"summary-section\">\n            <div class=\"section-title\">\n                <span class=\"icon\">📝</span>\n                <h2>内容梗概</h2>\n            </div>\n            <div class=\"summary-content\">\n                {{summary}}\n            </div>\n        </div>\n\n        <div class=\"points-section\">\n            <div class=\"section-title\">\n                <span class=\"icon\">💡</span>\n                <h2>有趣观点</h2>\n            </div>\n            <div class=\"points-container\">\n                {{#each interesting_points}}\n                    <div class=\"point-card\">\n                        <div class=\"point-content\">{{this}}</div>\n                    </div>\n                {{/each}}\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
+          "css": "body {\n    font-family: 'Helvetica Neue', Arial, sans-serif;\n    line-height: 1.6;\n    margin: 0;\n    padding: 0;\n    background: #f7f9fc;\n    color: #2c3e50;\n}\n\n.container {\n    max-width: 800px;\n    margin: 40px auto;\n    padding: 20px;\n}\n\n.section-title {\n    display: flex;\n    align-items: center;\n    margin-bottom: 25px;\n    border-bottom: 2px solid #e8ecf1;\n    padding-bottom: 10px;\n}\n\n.section-title h2 {\n    margin: 0;\n    font-size: 24px;\n    font-weight: 600;\n    color: #34495e;\n}\n\n.icon {\n    font-size: 24px;\n    margin-right: 12px;\n}\n\n/* Keywords Section */\n.keywords-section {\n    background: white;\n    padding: 25px;\n    border-radius: 12px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);\n    margin-bottom: 30px;\n}\n\n.keywords-container {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 10px;\n}\n\n.keyword {\n    background: #e3f2fd;\n    color: #1976d2;\n    padding: 6px 12px;\n    border-radius: 20px;\n    font-size: 14px;\n    font-weight: 500;\n    transition: all 0.3s ease;\n}\n\n.keyword:hover {\n    background: #1976d2;\n    color: white;\n    transform: translateY(-2px);\n}\n\n/* Summary Section */\n.summary-section {\n    background: white;\n    padding: 25px;\n    border-radius: 12px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);\n    margin-bottom: 30px;\n}\n\n.summary-content {\n    line-height: 1.8;\n    color: #485666;\n    text-align: justify;\n    padding: 10px;\n    background: #fafbfc;\n    border-radius: 8px;\n}\n\n/* Points Section */\n.points-section {\n    background: white;\n    padding: 25px;\n    border-radius: 12px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);\n}\n\n.points-container {\n    display: grid;\n    gap: 20px;\n}\n\n.point-card {\n    background: #fafbfc;\n    border-radius: 10px;\n    padding: 20px;\n    transition: all 0.3s ease;\n    border-left: 4px solid #3498db;\n}\n\n.point-card:hover {\n    transform: translateX(5px);\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);\n}\n\n.point-content {\n    color: #485666;\n    line-height: 1.7;\n}\n\n/* Responsive Design */\n@media screen and (max-width: 600px) {\n    .container {\n        margin: 20px auto;\n        padding: 15px;\n    }\n\n    .keywords-section,\n    .summary-section,\n    .points-section {\n        padding: 15px;\n    }\n\n    .section-title h2 {\n        font-size: 20px;\n    }\n\n    .icon {"
+        }
+      }
 ]
 
 export function getSceneById(id: string): Scene | undefined {
+    // 先检查是否是自定义模板
+    if (id.startsWith('custom_')) {
+        const customTemplates = JSON.parse(localStorage.getItem('customTemplates') || '[]')
+        return customTemplates.find((t: Scene) => t.id === id)
+    }
+    // 如果不是自定义模板，则使用内置场景
     return scenes.find(scene => scene.id === id)
 }
