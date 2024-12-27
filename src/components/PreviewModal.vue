@@ -7,7 +7,7 @@
       </div>
       <div class="modal-content">
         <div v-for="(example, index) in scene.examples" :key="index" class="example-preview">
-          <div v-html="renderTemplate(JSON.parse(example.assistant))"></div>
+          <div v-html="renderExample(example.assistant)"></div>
         </div>
       </div>
     </div>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { compile } from 'handlebars'
+import { renderTemplate } from '@/services/template'
 import type { Scene } from '@/types/scene'
 
 const props = defineProps<{
@@ -31,13 +31,16 @@ const close = () => {
   emit('update:visible', false)
 }
 
-const renderTemplate = (json: any) => {
+const renderExample = (example: string) => {
   try {
-    const template = compile(props.scene.template);
-    return template(json);
+    const json = JSON.parse(example)
+    if (props.scene.template) {
+      return renderTemplate(props.scene.template, json)
+    }
+    return ''
   } catch (error) {
-    console.error('Error rendering template:', error);
-    return '模板渲染错误';
+    console.error('Error rendering example:', error)
+    return '渲染错误'
   }
 }
 </script>
@@ -49,61 +52,90 @@ const renderTemplate = (json: any) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
+  animation: fadeIn var(--transition) ease-out;
 }
 
 .modal {
-  background: white;
-  border-radius: 16px;
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   width: 90%;
   max-width: 800px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  animation: scaleIn var(--transition) ease-out;
 }
 
 .modal-header {
-  padding: 1rem;
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--border);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e2e8f0;
+  justify-content: space-between;
 }
 
 .modal-header h3 {
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
   margin: 0;
-  font-size: 1.25rem;
-  color: #2d3748;
 }
 
 .close-button {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl);
+  color: var(--text-secondary);
   cursor: pointer;
-  color: #718096;
-  padding: 0.5rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  transition: var(--transition);
 }
 
 .close-button:hover {
-  color: #2d3748;
+  background-color: var(--background);
 }
 
 .modal-content {
-  padding: 1rem;
-  overflow-y: auto;
   flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-4);
 }
 
 .example-preview {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-4);
 }
 
 .example-preview:last-child {
   margin-bottom: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>

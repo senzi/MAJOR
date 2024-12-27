@@ -13,72 +13,77 @@
   </div>
 </template>
   
-  <script setup lang="ts">
-  import type { Scene } from '@/types/scene'
+<script setup lang="ts">
+import type { Scene } from '@/types/scene'
+
+defineProps<{
+  scene: Scene
+}>()
+
+defineEmits<{
+  click: []
+  preview: []
+}>()
+</script>
   
-  defineProps<{
-    scene: Scene
-  }>()
-  
-  defineEmits<{
-    click: []
-    preview: []
-  }>()
-  </script>
-  
-  <style scoped>
+<style scoped>
 .card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid #eee;
+  transition: var(--transition);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--spacing-4);
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
+  border-color: var(--primary-light);
 }
 
 .card-title {
   margin: 0;
-  font-size: 1.25rem;
-  color: #333;
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
 }
 
 .card-description {
   margin: 0;
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
 .card-preview button {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  background: #f5f5f5;
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--text-secondary);
   cursor: pointer;
+  transition: var(--transition);
 }
 
 .card-preview button:hover {
-  background: #eee;
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: white;
 }
 
 .card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--spacing-2);
 }
 
 .tag {
-  font-size: 0.875rem;
-  color: #666;
-  background: #f5f5f5;
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  background: var(--background);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
 }
 </style>

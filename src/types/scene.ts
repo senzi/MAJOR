@@ -5,8 +5,10 @@ export interface Scene {
   introduction: string
   systemPrompt: string
   examples: Example[]
-  template: string
-  templateData?: (data: TemplateData) => string
+  template: {
+    html: string
+    css: string
+  }
   tags: string[]
 }
 
@@ -16,6 +18,5 @@ export interface Example {
 }
 
 export interface TemplateData {
-  skills: string[]
-  description: string
+  [key: string]: any
 }

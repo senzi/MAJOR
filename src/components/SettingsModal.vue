@@ -73,39 +73,148 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn var(--transition) ease-out;
   }
-  
+
   .modal {
-    background: white;
-    border-radius: 8px;
+    background-color: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
     width: 90%;
     max-width: 500px;
-    padding: 1rem;
+    animation: scaleIn var(--transition) ease-out;
   }
-  
+
   .modal-header {
+    padding: var(--spacing-4);
+    border-bottom: 1px solid var(--border);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
   }
-  
+
+  .modal-header h2 {
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .modal-header button {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    transition: var(--transition);
+  }
+
+  .modal-header button:hover {
+    background-color: var(--border);
+    color: var(--text-primary);
+  }
+
+  .modal-body {
+    padding: var(--spacing-6);
+  }
+
   .form-group {
-    margin: 1rem 0;
+    margin-bottom: var(--spacing-6);
   }
-  
+
+  .form-group label {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-2);
+  }
+
   .form-group input {
     width: 100%;
-    padding: 0.5rem;
+    padding: var(--spacing-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: var(--font-size-base);
+    transition: var(--transition);
   }
-  
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+  }
+
+  .info-section {
+    background-color: var(--background);
+    border-radius: var(--radius);
+    padding: var(--spacing-4);
+  }
+
+  .info-section h3 {
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+    margin: var(--spacing-4) 0 var(--spacing-2);
+  }
+
+  .info-section h3:first-child {
+    margin-top: 0;
+  }
+
+  .info-section ul,
+  .info-section ol {
+    padding-left: var(--spacing-4);
+    color: var(--text-secondary);
+  }
+
+  .info-section li {
+    margin: var(--spacing-2) 0;
+  }
+
   .modal-footer {
+    padding: var(--spacing-4);
+    border-top: 1px solid var(--border);
     display: flex;
     justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1rem;
+    gap: var(--spacing-2);
+  }
+
+  .modal-footer button {
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .modal-footer button:first-child {
+    border: 1px solid var(--border);
+    background-color: white;
+    color: var(--text-secondary);
+  }
+
+  .modal-footer button:first-child:hover {
+    background-color: var(--background);
+    color: var(--text-primary);
+  }
+
+  .modal-footer button:last-child {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+  }
+
+  .modal-footer button:last-child:hover {
+    background-color: var(--primary-dark);
   }
   </style>
